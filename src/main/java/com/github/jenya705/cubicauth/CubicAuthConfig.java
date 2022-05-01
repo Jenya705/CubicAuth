@@ -93,4 +93,7 @@ public class CubicAuthConfig implements SettingsHolder {
     public static final Property<String> CHANGE_PASSWORD = PropertyInitializer
             .newProperty("message.change_password", "/changepassword <current password> <new password>");
 
+    public static final Property<String> CONTACT_ADMINISTRATOR = PropertyInitializer
+            .newProperty("message.contact_administrator", "Contact to administrator to fix the problem!");
+
 }

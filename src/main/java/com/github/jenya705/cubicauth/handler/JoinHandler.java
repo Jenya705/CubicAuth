@@ -11,7 +11,10 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -53,6 +56,16 @@ public class JoinHandler {
                 .getServer(plugin.getConfig().getProperty(CubicAuthConfig.LIMBO_SERVER))
                 .orElseThrow()
         );
+    }
+
+    @Subscribe
+    public void connected(ServerConnectedEvent event) {
+        if (plugin.getSession(event.getPlayer()) != null) {
+            event.getPlayer().disconnect(Component
+                    .text(plugin.getConfig().getProperty(CubicAuthConfig.CONTACT_ADMINISTRATOR))
+                    .color(NamedTextColor.BLUE)
+            );
+        }
     }
 
     @Subscribe
