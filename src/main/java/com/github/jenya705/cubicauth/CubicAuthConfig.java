@@ -96,4 +96,7 @@ public class CubicAuthConfig implements SettingsHolder {
     public static final Property<String> CONTACT_ADMINISTRATOR = PropertyInitializer
             .newProperty("message.contact_administrator", "Contact to administrator to fix the problem!");
 
+    public static final Property<String> BAD_CHARACTERS = PropertyInitializer
+            .newProperty("message.bad_characters", "Your nickname contains bad characters!");
+
 }

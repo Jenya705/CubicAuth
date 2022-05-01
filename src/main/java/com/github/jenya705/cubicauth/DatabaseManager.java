@@ -1,8 +1,5 @@
 package com.github.jenya705.cubicauth;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 import java.sql.*;
 import java.util.Optional;
 
@@ -13,56 +10,53 @@ public class DatabaseManager {
 
     private final CubicAuth plugin;
 
-    private HikariDataSource dataSource;
+    private Connection connection;
 
     public DatabaseManager(CubicAuth plugin) throws ClassNotFoundException {
         this.plugin = plugin;
         Class.forName("com.mysql.cj.jdbc.Driver");
     }
 
-    public void reload() {
-        HikariConfig config = new HikariConfig();
-        config.setUsername(plugin.getConfig().getProperty(CubicAuthConfig.SQL_USER));
-        config.setPassword(plugin.getConfig().getProperty(CubicAuthConfig.SQL_PASSWORD));
-        config.setJdbcUrl("jdbc:mysql://%s/%s".formatted(
-                plugin.getConfig().getProperty(CubicAuthConfig.SQL_HOST),
-                plugin.getConfig().getProperty(CubicAuthConfig.SQL_DATABASE)
-        ));
-        if (dataSource != null && dataSource.isRunning()) {
-            dataSource.close();
-        }
-        dataSource = new HikariDataSource(config);
-    }
-
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    public void reload() throws SQLException {
+        connection = DriverManager.getConnection(
+                "jdbc:mysql://%s/%s?autoReconnect=true".formatted(
+                        plugin.getConfig().getProperty(CubicAuthConfig.SQL_HOST),
+                        plugin.getConfig().getProperty(CubicAuthConfig.SQL_DATABASE)
+                ),
+                plugin.getConfig().getProperty(CubicAuthConfig.SQL_USER),
+                plugin.getConfig().getProperty(CubicAuthConfig.SQL_PASSWORD)
+        );
     }
 
     public void update(String sql, Object... objects) throws SQLException {
-        if (objects.length == 0) {
-            Statement statement = getConnection().createStatement();
-            statement.executeUpdate(sql);
-        }
-        else {
-            PreparedStatement statement = getConnection().prepareStatement(sql);
-            for (int i = 0; i < objects.length; ++i) {
-                statement.setObject(i + 1, objects[i]);
+        synchronized (this) {
+            if (objects.length == 0) {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(sql);
             }
-            statement.executeUpdate();
+            else {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                for (int i = 0; i < objects.length; ++i) {
+                    statement.setObject(i + 1, objects[i]);
+                }
+                statement.executeUpdate();
+            }
         }
     }
 
     public ResultSet query(String sql, Object... objects) throws SQLException {
-        if (objects.length == 0) {
-            Statement statement = getConnection().createStatement();
-            return statement.executeQuery(sql);
-        }
-        else {
-            PreparedStatement statement = getConnection().prepareStatement(sql);
-            for (int i = 0; i < objects.length; ++i) {
-                statement.setObject(i + 1, objects[i]);
+        synchronized (this) {
+            if (objects.length == 0) {
+                Statement statement = connection.createStatement();
+                return statement.executeQuery(sql);
             }
-            return statement.executeQuery();
+            else {
+                PreparedStatement statement = connection.prepareStatement(sql);
+                for (int i = 0; i < objects.length; ++i) {
+                    statement.setObject(i + 1, objects[i]);
+                }
+                return statement.executeQuery();
+            }
         }
     }
 

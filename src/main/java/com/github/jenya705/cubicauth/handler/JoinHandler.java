@@ -21,12 +21,16 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Jenya705
  */
 @RequiredArgsConstructor
 public class JoinHandler {
+
+    private static final Pattern NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]*");
 
     private final CubicAuth plugin;
 
@@ -60,7 +64,9 @@ public class JoinHandler {
 
     @Subscribe
     public void connected(ServerConnectedEvent event) {
-        if (plugin.getSession(event.getPlayer()) != null) {
+        if (!event.getServer().getServerInfo()
+                .getName().equals(plugin.getConfig().getProperty(CubicAuthConfig.LIMBO_SERVER)) &&
+                plugin.getSession(event.getPlayer()) != null) {
             event.getPlayer().disconnect(Component
                     .text(plugin.getConfig().getProperty(CubicAuthConfig.CONTACT_ADMINISTRATOR))
                     .color(NamedTextColor.BLUE)
@@ -70,6 +76,14 @@ public class JoinHandler {
 
     @Subscribe
     public void login(PreLoginEvent event) throws SQLException {
+        Matcher nicknameMatcher = NICKNAME_PATTERN.matcher(event.getUsername());
+        if (!nicknameMatcher.find() || nicknameMatcher.start() != 0 || nicknameMatcher.end() != event.getUsername().length()) {
+            event.setResult(PreLoginEvent.PreLoginComponentResult.denied(Component
+                    .text(plugin.getConfig().getProperty(CubicAuthConfig.BAD_CHARACTERS))
+                    .color(NamedTextColor.BLUE)
+            ));
+            return;
+        }
         UserModel userModel = plugin
                 .getDatabaseManager()
                 .getUser(event.getUsername())
