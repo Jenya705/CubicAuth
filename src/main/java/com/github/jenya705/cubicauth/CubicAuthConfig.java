@@ -31,7 +31,7 @@ public class CubicAuthConfig implements SettingsHolder {
             .newProperty("limbo", "reg-limbo");
 
     @Comment({
-            "Interval of time (in seconds) when command message will be repeated\n",
+            "Interval of time (in seconds) when command message will be repeated",
             "When player not register message.register_notify will be sent otherwise message.login_notify"
     })
     public static final Property<Integer> AUTH_MESSAGE_REPEAT = PropertyInitializer
@@ -43,6 +43,10 @@ public class CubicAuthConfig implements SettingsHolder {
     })
     public static final Property<Integer> AUTHENTICATION_TIME = PropertyInitializer
             .newProperty("authentication_time", 60);
+
+    @Comment("Maximum attempts. If more then player kicked with reason message.maximum_attempts")
+    public static final Property<Integer> MAXIMUM_ATTEMPTS = PropertyInitializer
+            .newProperty("maximum_attempts", 5);
 
     public static final Property<String> ALREADY_AUTHENTICATED = PropertyInitializer
             .newProperty("message.already_authenticated", "Auth >> You are already authenticated!");
@@ -64,5 +68,29 @@ public class CubicAuthConfig implements SettingsHolder {
 
     public static final Property<String> AUTHENTICATION_TIME_EXCEEDED = PropertyInitializer
             .newProperty("message.authentication_time_exceeded", "Time to login exceeded!");
+
+    public static final Property<String> REGISTER_COMMAND = PropertyInitializer
+            .newProperty("message.register_command", "/register <password> <password repeat>");
+
+    public static final Property<String> LOGIN_COMMAND = PropertyInitializer
+            .newProperty("message.login_command", "/login <password>");
+
+    public static final Property<String> PREMIUM_COMMAND = PropertyInitializer
+            .newProperty("message.premium_command", "/premium");
+
+    public static final Property<String> PREMIUM_COMMAND_PASSWORD = PropertyInitializer
+            .newProperty("message.premium_command_password", "/premium <password>");
+
+    public static final Property<String> MAXIMUM_ATTEMPTS_REASON = PropertyInitializer
+            .newProperty("message.maximum_attempts", "Too many attempts!");
+
+    public static final Property<String> SUCCESS = PropertyInitializer
+            .newProperty("message.success", "Auth >> Successfully!");
+
+    public static final Property<String> NEED_REGISTER = PropertyInitializer
+            .newProperty("message.need_register", "You need to register to play!");
+
+    public static final Property<String> CHANGE_PASSWORD = PropertyInitializer
+            .newProperty("message.change_password", "/changepassword <current password> <new password>");
 
 }

@@ -2,9 +2,7 @@ package com.github.jenya705.cubicauth;
 
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.SettingsManagerBuilder;
-import com.github.jenya705.cubicauth.command.LoginCommand;
-import com.github.jenya705.cubicauth.command.PremiumCommand;
-import com.github.jenya705.cubicauth.command.RegisterCommand;
+import com.github.jenya705.cubicauth.command.*;
 import com.github.jenya705.cubicauth.handler.DisconnectHandler;
 import com.github.jenya705.cubicauth.handler.JoinHandler;
 import com.google.inject.Inject;
@@ -55,6 +53,7 @@ public class CubicAuth {
                 .withYamlFile(dataDirectory.resolve("config.yml"))
                 .configurationData(CubicAuthConfig.class)
                 .create();
+        config.save();
         this.databaseManager = new DatabaseManager(this);
     }
 
@@ -72,6 +71,8 @@ public class CubicAuth {
         server.getCommandManager().register("register", new RegisterCommand(this), "reg");
         server.getCommandManager().register("login", new LoginCommand(this), "log", "l");
         server.getCommandManager().register("premium", new PremiumCommand(this), "p");
+        server.getCommandManager().register("forceunregister", new ForceUnregisterCommand(this), "forceunreg");
+        server.getCommandManager().register("changepassword", new ChangePasswordCommand(this), "changepass");
     }
 
     public void authenticated(Player player) {

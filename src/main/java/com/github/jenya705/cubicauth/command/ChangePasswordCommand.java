@@ -3,10 +3,11 @@ package com.github.jenya705.cubicauth.command;
 import com.github.jenya705.cubicauth.CubicAuth;
 import com.github.jenya705.cubicauth.CubicAuthConfig;
 import com.github.jenya705.cubicauth.PasswordEncryption;
-import com.github.jenya705.cubicauth.UserLoginSession;
+import com.github.jenya705.cubicauth.UserModel;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -14,36 +15,45 @@ import net.kyori.adventure.text.format.NamedTextColor;
  * @author Jenya705
  */
 @RequiredArgsConstructor
-public class LoginCommand implements SimpleCommand {
+public class ChangePasswordCommand implements SimpleCommand {
 
     private final CubicAuth plugin;
 
     @Override
+    @SneakyThrows
     public void execute(Invocation invocation) {
-        if (!CommandUtils.validate(plugin, invocation)) return;
-        Player player = (Player) invocation.source();
+        if (!(invocation.source() instanceof Player player)) {
+            invocation.source().sendMessage(Component.text("Only for players"));
+            return;
+        }
         String[] args = invocation.arguments();
-        if (args.length != 1) {
+        if (args.length != 2) {
             player.sendMessage(Component
-                    .text(plugin.getConfig().getProperty(CubicAuthConfig.LOGIN_COMMAND))
+                    .text(plugin.getConfig().getProperty(CubicAuthConfig.CHANGE_PASSWORD))
                     .color(NamedTextColor.RED)
             );
             return;
         }
-        UserLoginSession loginSession = plugin.getSession(player);
-        if (loginSession.getUserModel() == null) return;
-        if (!PasswordEncryption.isPasswordsEqual(args[0], loginSession.getUserModel().getHashPassword())) {
-            loginSession.newAttempt(plugin, player);
+        UserModel userModel = plugin.getDatabaseManager()
+                .getUser(player.getUsername())
+                .orElseThrow();
+        if (!PasswordEncryption.isPasswordsEqual(args[0], userModel.getHashPassword())) {
             player.sendMessage(Component
                     .text(plugin.getConfig().getProperty(CubicAuthConfig.BAD_PASSWORD))
                     .color(NamedTextColor.RED)
             );
             return;
         }
+        plugin.getDatabaseManager()
+                .upsertUser(UserModel.builder()
+                        .username(player.getUsername())
+                        .premium(userModel.isPremium())
+                        .hashPassword(PasswordEncryption.hashWithRandomSalt(args[1]))
+                        .build()
+                );
         player.sendMessage(Component
-                .text(plugin.getConfig().getProperty(CubicAuthConfig.AUTHENTICATION_SUCCESS))
+                .text(plugin.getConfig().getProperty(CubicAuthConfig.SUCCESS))
                 .color(NamedTextColor.GREEN)
         );
-        plugin.authenticated(player);
     }
 }

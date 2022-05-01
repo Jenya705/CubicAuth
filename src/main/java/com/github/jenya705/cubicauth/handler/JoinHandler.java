@@ -9,12 +9,15 @@ import com.github.jenya705.cubicauth.task.NotifyRunnable;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
+import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import lombok.RequiredArgsConstructor;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * @author Jenya705
@@ -69,6 +72,21 @@ public class JoinHandler {
             return;
         }
         event.setResult(PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
+    }
+
+    @Subscribe
+    public void profile(GameProfileRequestEvent event) throws SQLException {
+        plugin
+                .getDatabaseManager()
+                .getUser(event.getUsername())
+                .ifPresent(userModel -> event
+                        .setGameProfile(event
+                                .getGameProfile()
+                                .withId(UUID.nameUUIDFromBytes(
+                                        ("OfflinePlayer:" + userModel.getUsername()).getBytes(StandardCharsets.UTF_8)
+                                ))
+                        )
+                );
     }
 
 }

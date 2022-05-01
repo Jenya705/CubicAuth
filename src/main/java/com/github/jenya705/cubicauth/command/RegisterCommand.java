@@ -24,12 +24,13 @@ public class RegisterCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         if (args.length != 2 || !args[0].equals(args[1])) {
             player.sendMessage(Component
-                    .text("/reg <password> <password repeat>")
+                    .text(plugin.getConfig().getProperty(CubicAuthConfig.REGISTER_COMMAND))
                     .color(NamedTextColor.RED));
             return;
         }
         UserLoginSession loginSession = plugin.getSession(player);
         if (loginSession.getUserModel() != null) {
+            loginSession.newAttempt(plugin, player);
             player.sendMessage(Component
                     .text(plugin.getConfig().getProperty(CubicAuthConfig.ALREADY_REGISTERED))
                     .color(NamedTextColor.RED)

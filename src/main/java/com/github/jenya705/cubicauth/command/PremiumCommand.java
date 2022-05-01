@@ -36,7 +36,7 @@ public class PremiumCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         if (args.length != 1) {
             player.sendMessage(Component
-                    .text("/premium <password>")
+                    .text(plugin.getConfig().getProperty(CubicAuthConfig.PREMIUM_COMMAND_PASSWORD))
                     .color(NamedTextColor.RED)
             );
             return;

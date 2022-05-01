@@ -2,7 +2,6 @@ package com.github.jenya705.cubicauth;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.util.Optional;
@@ -97,4 +96,7 @@ public class DatabaseManager {
         );
     }
 
+    public void deleteUser(String nickname) throws SQLException {
+        update("DELETE FROM users WHERE username = ? ", nickname);
+    }
 }
