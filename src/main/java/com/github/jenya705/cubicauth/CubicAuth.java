@@ -5,6 +5,7 @@ import ch.jalu.configme.SettingsManagerBuilder;
 import com.github.jenya705.cubicauth.command.*;
 import com.github.jenya705.cubicauth.handler.DisconnectHandler;
 import com.github.jenya705.cubicauth.handler.JoinHandler;
+import com.github.jenya705.cubicauth.handler.Limiter;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -68,6 +69,7 @@ public class CubicAuth {
         databaseManager.setup();
         server.getEventManager().register(this, new JoinHandler(this));
         server.getEventManager().register(this, new DisconnectHandler(this));
+        server.getEventManager().register(this, new Limiter(this));
         server.getCommandManager().register("register", new RegisterCommand(this), "reg");
         server.getCommandManager().register("login", new LoginCommand(this), "log", "l");
         server.getCommandManager().register("premium", new PremiumCommand(this), "p");
