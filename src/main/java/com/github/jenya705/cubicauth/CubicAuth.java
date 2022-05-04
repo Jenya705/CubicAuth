@@ -75,6 +75,7 @@ public class CubicAuth {
         server.getCommandManager().register("premium", new PremiumCommand(this), "p");
         server.getCommandManager().register("forceunregister", new ForceUnregisterCommand(this), "forceunreg");
         server.getCommandManager().register("changepassword", new ChangePasswordCommand(this), "changepass");
+        server.getCommandManager().register("isregistered", new IsRegisteredCommand(this), "isreg");
     }
 
     public void authenticated(Player player) {
@@ -89,7 +90,9 @@ public class CubicAuth {
     public void forceRemoveSession(Player player) {
         UserLoginSession session = loginSessions.remove(player.getUsername());
         if (session == null) return;
-        session.getTasks().forEach(ScheduledTask::cancel);
+        if (session.getTasks() != null) {
+            session.getTasks().forEach(ScheduledTask::cancel);
+        }
     }
 
     public UserLoginSession getSession(Player player) {

@@ -46,7 +46,8 @@ public class RegisterCommand implements SimpleCommand {
         );
         player.sendMessage(Component
                 .text(plugin.getConfig().getProperty(CubicAuthConfig.AUTHENTICATION_SUCCESS))
-                .color(NamedTextColor.GREEN));
+                .color(NamedTextColor.GREEN)
+        );
         plugin.authenticated(player);
     }
 
