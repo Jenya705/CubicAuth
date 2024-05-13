@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class JoinHandler {
 
-    private static final Pattern NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]*");
+    private static final Pattern NICKNAME_PATTERN = Pattern.compile("git ad");
 
     private final CubicAuth plugin;
 
