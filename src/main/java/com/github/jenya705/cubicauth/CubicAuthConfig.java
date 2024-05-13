@@ -26,25 +26,25 @@ public class CubicAuthConfig implements SettingsHolder {
     public static final Property<String> SQL_DATABASE = PropertyInitializer
             .newProperty("sql.database", "auth");
 
-    @Comment("Name of limbo server")
+    @Comment("Name of the limbo server")
     public static final Property<String> LIMBO_SERVER = PropertyInitializer
             .newProperty("limbo", "reg-limbo");
 
     @Comment({
             "Interval of time (in seconds) when command message will be repeated",
-            "When player not register message.register_notify will be sent otherwise message.login_notify"
+            "When player is not registering, message.register_notify will be sent otherwise message.login_notify"
     })
     public static final Property<Integer> AUTH_MESSAGE_REPEAT = PropertyInitializer
             .newProperty("auth_message_repeat", 10);
 
     @Comment({
-            "Interval of time (in seconds) when player will be kicked because of time exceeded",
-            "Message of kick is message.authentication_time_exceeded"
+            "Interval of time (in seconds) when player will be kicked because of exceeding time",
+            "Kick message is message.authentication_time_exceeded"
     })
     public static final Property<Integer> AUTHENTICATION_TIME = PropertyInitializer
             .newProperty("authentication_time", 60);
 
-    @Comment("Maximum attempts. If more then player kicked with reason message.maximum_attempts")
+    @Comment("Maximum attempts. If more then player will be kicked with reason message.maximum_attempts")
     public static final Property<Integer> MAXIMUM_ATTEMPTS = PropertyInitializer
             .newProperty("maximum_attempts", 5);
 
